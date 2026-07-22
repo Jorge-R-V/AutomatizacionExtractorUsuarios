@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | DataExtractor OSINT</title>
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --card-bg: #1a1f2e;
+            --border-color: #2a3040;
+            --accent: #4f8cf7;
+            --accent-hover: #3b7af0;
+            --text-primary: #e8ecf4;
+            --text-secondary: #8892a4;
+            --success: #22c55e;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(79, 140, 247, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 50%);
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .login-card h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .login-card .subtitle {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: transparent;
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .toggle-link a {
+            color: var(--accent);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .toggle-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-msg {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--danger);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo">&#x1f6e1;&#xfe0f;</div>
+        <h1 id="formTitle">Iniciar Sesion</h1>
+        <p class="subtitle" id="formSubtitle">Accede a tu panel DataExtractor OSINT</p>
+
+        <div class="error-msg" id="errorMsg"></div>
+
+        <form id="authForm">
+            <div class="form-group">
+                <label for="username">Usuario</label>
+                <input type="text" id="username" placeholder="Tu nombre de usuario" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Contrasena</label>
+                <input type="password" id="password" placeholder="Tu contrasena" required>
+            </div>
+            <div class="form-group" id="rememberGroup" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                <input type="checkbox" id="rememberMe" style="width:auto;">
+                <label for="rememberMe" style="margin:0;font-size:0.85rem;text-transform:none;letter-spacing:0;color:var(--text-secondary);cursor:pointer;">Mantener sesi&#xf3;n iniciada</label>
+            </div>
+            <button type="submit" class="btn" id="btnSubmit">Entrar</button>
+        </form>
+
+        <div class="toggle-link">
+            <span id="toggleText">No tienes cuenta?</span>
+            <a id="toggleLink" onclick="toggleMode()">Registrate</a>
+        </div>
+    </div>
+
+    <script>
+        let isLogin = true;
+
+        function toggleMode() {
+            isLogin = !isLogin;
+            document.getElementById('formTitle').textContent = isLogin ? 'Iniciar Sesion' : 'Crear Cuenta';
+            document.getElementById('formSubtitle').textContent = isLogin
+                ? 'Accede a tu panel DataExtractor OSINT'
+                : 'Crea una cuenta para proteger tu panel';
+            document.getElementById('btnSubmit').textContent = isLogin ? 'Entrar' : 'Crear Cuenta';
+            document.getElementById('toggleText').textContent = isLogin ? 'No tienes cuenta?' : 'Ya tienes cuenta?';
+            document.getElementById('toggleLink').textContent = isLogin ? 'Registrate' : 'Inicia sesion';
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('errorMsg');
+            const btn = document.getElementById('btnSubmit');
+
+            btn.disabled = true;
+            btn.textContent = 'Cargando...';
+            errorEl.style.display = 'none';
+
+            const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, remember: document.getElementById('rememberMe').checked })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    errorEl.textContent = data.error || 'Error desconocido';
+                    errorEl.style.display = 'block';
+                }
+            } catch (err) {
+                errorEl.textContent = 'Error de conexion';
+                errorEl.style.display = 'block';
+            }
+
+            btn.disabled = false;
+            btn.textContent = isLogin ? 'Entrar' : 'Crear Cuenta';
+        });
+    </script>
+</body>
+</html>

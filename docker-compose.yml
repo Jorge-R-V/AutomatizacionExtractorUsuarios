@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  dataextractor:
+    build: .
+    container_name: dataextractor_web
+    ports:
+      - "5000:5000"
+    volumes:
+      # Persistencia de datos locales (CSVs, bases de datos y configuraciones)
+      - ./Output:/app/Output
+      - ./logs:/app/logs
+      - ./history.json:/app/history.json
+      - ./settings.json:/app/settings.json
+      - ./geocache.json:/app/geocache.json
+      - ./.flask_secret:/app/.flask_secret
+    environment:
+      - FLASK_DEBUG=0
+      - DOCKER=1
+    restart: unless-stopped

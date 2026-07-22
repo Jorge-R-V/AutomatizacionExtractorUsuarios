@@ -1,0 +1,59 @@
+﻿# ==============================
+# SECRETS & CREDENTIALS
+# ==============================
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secret*
+.flask_secret
+history.json
+session_*/
+config.json
+credentials.json
+
+# ==============================
+# NODE / JAVASCRIPT
+# ==============================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ==============================
+# PYTHON
+# ==============================
+__pycache__/
+*.py[cod]
+*.class
+venv/
+.venv/
+env/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+
+# ==============================
+# OS & IDE
+# ==============================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
